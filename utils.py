@@ -92,7 +92,7 @@ def display_triplet_distance_test(model,test_loader,name):
                     if label[rand_index] == 0:
                         break
 
-            distance = l2_dist.forward(out_a,out_n).data[rand_index][0]
+            distance = l2_dist.forward(out_a,out_n).data[rand_index]
             print("Distance: {}".format(distance))
             #distance_pca = l2_dist.forward(PCA(128).fit_transform(out_a.data[i].cpu().numpy()),PCA(128).fit_transform(out_n.data[i].cpu().numpy())).data[0]
             #print("Distance(PCA): {}".format(distance_pca))
