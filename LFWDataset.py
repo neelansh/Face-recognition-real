@@ -23,7 +23,7 @@ class LFWDataset(datasets.ImageFolder):
                 pairs.append(pair)
         return np.array(pairs)
 
-    def get_lfw_paths(self,lfw_dir,file_ext="jpg"):
+    def get_lfw_paths(self,lfw_dir,file_ext="png"):
 
         pairs = self.read_lfw_pairs(self.pairs_path)
 
