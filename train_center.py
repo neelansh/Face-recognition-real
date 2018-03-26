@@ -130,6 +130,7 @@ def main():
 
 
     # optionally resume from a checkpoint
+    checkpoint = None
     if args.resume:
         if os.path.isfile(args.resume_path):
             print('=> loading checkpoint {}'.format(args.resume_path))
