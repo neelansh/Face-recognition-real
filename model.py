@@ -70,7 +70,7 @@ class FaceModelCenter(nn.Module):
         self.centers = torch.zeros(num_classes, embedding_size).type(torch.FloatTensor)
         self.num_classes = num_classes
         
-        if(!pretrained):
+        if(not pretrained):
             self.apply(self.weights_init)
 
         if checkpoint is not None:
