@@ -23,14 +23,14 @@ import collections
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Face Recognition')
 # Model options
-parser.add_argument('--dataroot', type=str, default='/media/neelansh/Windows/Users/neela/My Documents/facerecog_data/test',
+parser.add_argument('--dataroot', type=str, default='../test_align',
                     help='path to dataset')
-parser.add_argument('--lfw-dir', type=str, default='/media/neelansh/Windows/Users/neela/My Documents/facerecog_data/lfw',
+parser.add_argument('--lfw-dir', type=str, default='../lfw/lfw_aligned',
                     help='path to dataset')
-parser.add_argument('--lfw-pairs-path', type=str, default='/media/neelansh/Windows/Users/neela/My Documents/facerecog_data/lfw_pairs.txt',
+parser.add_argument('--lfw-pairs-path', type=str, default='./lfw_pairs.txt',
                     help='path to pairs file')
 
-parser.add_argument('--log-dir', default='/media/neelansh/Windows/Users/neela/My Documents/facerecog_data/log',
+parser.add_argument('--log-dir', default='../log',
                     help='folder to output model checkpoints')
 
 parser.add_argument('--resume',
