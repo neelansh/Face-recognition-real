@@ -33,7 +33,9 @@ parser.add_argument('--lfw-pairs-path', type=str, default='./lfw_pairs.txt',
 parser.add_argument('--log-dir', default='../log',
                     help='folder to output model checkpoints')
 
-parser.add_argument('--resume',
+parser.add_argument('--resume', action='store_true', default=False,
+                    help='resumes training')
+parser.add_argument('--resume_path',
                     default='/media/lior/LinuxHDD/pytorch_face_logs/run-optim_adam-lr0.001-wd0.0-embeddings512-center0.5-MSCeleb/checkpoint_11.pth',
                     type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
@@ -129,13 +131,13 @@ def main():
 
     # optionally resume from a checkpoint
     if args.resume:
-        if os.path.isfile(args.resume):
-            print('=> loading checkpoint {}'.format(args.resume))
-            checkpoint = torch.load(args.resume)
+        if os.path.isfile(args.resume_path):
+            print('=> loading checkpoint {}'.format(args.resume_path))
+            checkpoint = torch.load(args.resume_path)
             args.start_epoch = checkpoint['epoch']
         else:
             checkpoint = None
-            print('=> no checkpoint found at {}'.format(args.resume))
+            print('=> no checkpoint found at {}'.format(args.resume_path))
 
     model = FaceModelCenter(embedding_size=args.embedding_size,num_classes=len(train_dir.classes)
                             ,checkpoint=checkpoint)
