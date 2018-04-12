@@ -76,9 +76,10 @@ def main(args):
             for image_path in cls.image_paths:
                 nrof_images_total += 1
                 filename = os.path.splitext(os.path.split(image_path)[1])[0]
-                output_filename = os.path.join(output_class_dir, filename+'.png')
+                output_filename = os.path.join(output_class_dir, filename+'.jpg')
+                alias = os.path.join(output_class_dir, filename+'.png') 
                 print(image_path)
-                if not os.path.exists(output_filename):
+                if not os.path.exists(output_filename) and not os.path.exists(alias):
                     try:
                         img = misc.imread(image_path)
                     except (IOError, ValueError, IndexError) as e:
@@ -146,11 +147,11 @@ def parse_arguments(argv):
     parser.add_argument('--image_size', type=int,
         help='Image size (height, width) in pixels.', default=182)
     parser.add_argument('--margin', type=int,
-        help='Margin for the crop around the bounding box (height, width) in pixels.', default=22)
+        help='Margin for the crop around the bounding box (height, width) in pixels.', default=44)
     parser.add_argument('--random_order', 
         help='Shuffles the order of images to enable alignment using multiple processes.', action='store_true')
     parser.add_argument('--gpu_memory_fraction', type=float,
-        help='Upper bound on the amount of GPU memory that will be used by the process.', default=1.0)
+        help='Upper bound on the amount of GPU memory that will be used by the process.', default=0.8)
     parser.add_argument('--detect_multiple_faces', type=bool,
                         help='Detect and align multiple faces per image.', default=False)
     return parser.parse_args(argv)
