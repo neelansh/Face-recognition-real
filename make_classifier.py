@@ -18,14 +18,14 @@ with tf.Graph().as_default():
 
     with tf.Session() as sess:
 
-        datadir = '~/Webcam/dataset_aligned'
+        datadir = '~/data_face/dataset_aligned'
         dataset = facenet.get_dataset(datadir)
         paths, labels = facenet.get_image_paths_and_labels(dataset)
         print('Number of classes: %d' % len(dataset))
         print('Number of images: %d' % len(paths))
 
         print('Loading feature extraction model')
-        modeldir = './models/facenet/20170512-110547/20170512-110547.pb'
+        modeldir = './models/20180402-114759/20180402-114759.pb'
         facenet.load_model(modeldir)
 
         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")

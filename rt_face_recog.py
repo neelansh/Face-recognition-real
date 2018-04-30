@@ -39,7 +39,7 @@ with tf.Graph().as_default():
         HumanNames = ['kejriwal','modi','neelansh']    #train human name
 
         print('Loading feature extraction model')
-        modeldir = './models/facenet/20170512-110547/20170512-110547.pb'
+        modeldir = './models/20180402-114759/20180402-114759.pb'
         facenet.load_model(modeldir)
 
         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
@@ -53,7 +53,7 @@ with tf.Graph().as_default():
             (model, class_names) = pickle.load(infile)
             print('load classifier file-> %s' % classifier_filename_exp)
 
-        video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture('http://192.168.1.2:1024/video')
         c = 0
 
         # #video writer
@@ -122,9 +122,8 @@ with tf.Graph().as_default():
                         text_x = bb[i][0]
                         text_y = bb[i][3] + 20
                         # print('result: ', best_class_indices[0])
-                        print(predictions)
                         for H_i in HumanNames:
-                            if(False):
+                            if(np.max(predictions) < 0.45):
                                 cv2.putText(frame, 'someone else', (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                             1, (0, 0, 255), thickness=1, lineType=2)
                             else:
