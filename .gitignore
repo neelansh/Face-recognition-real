@@ -1,5 +1,5 @@
 data/*
 .ipynb_checkpoints/
 models/*
-
+.vscode/
 __pycache__/

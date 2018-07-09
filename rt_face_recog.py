@@ -18,7 +18,7 @@ import copy
 import math
 import pickle
 from sklearn.svm import SVC
-from sklearn.externals import joblib
+from sklearn.neighbors import KNeighborsClassifier
 
 print('Creating networks and loading parameters')
 with tf.Graph().as_default():
@@ -27,8 +27,8 @@ with tf.Graph().as_default():
     with sess.as_default():
         pnet, rnet, onet = detect_face.create_mtcnn(sess, './')
 
-        minsize = 20  # minimum size of face
-        threshold = [0.6, 0.7, 0.7]  # three steps's threshold
+        minsize = 25  # minimum size of face
+        threshold = [0.75, 0.75, 0.75]  # three steps's threshold
         factor = 0.709  # scale factor
         margin = 44
         frame_interval = 3
@@ -36,10 +36,10 @@ with tf.Graph().as_default():
         image_size = 182
         input_image_size = 160
 
-        HumanNames = ['kejriwal','modi','neelansh']    #train human name
+        
 
         print('Loading feature extraction model')
-        modeldir = './models/20180402-114759/20180402-114759.pb'
+        modeldir = './models/20170512-110547-center-loss/20170512-110547.pb'
         facenet.load_model(modeldir)
 
         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
@@ -47,32 +47,39 @@ with tf.Graph().as_default():
         phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
         embedding_size = embeddings.get_shape()[1]
 
-        classifier_filename = './models/neelansh.pkl'
+        classifier_filename = './models/test_video.pkl'
         classifier_filename_exp = os.path.expanduser(classifier_filename)
+        HumanNames = []
         with open(classifier_filename_exp, 'rb') as infile:
             (model, class_names) = pickle.load(infile)
             print('load classifier file-> %s' % classifier_filename_exp)
+            HumanNames = class_names
 
-        video_capture = cv2.VideoCapture('http://192.168.1.2:1024/video')
+        # video_capture = cv2.VideoCapture('rtsp://admin:Invoid1404@192.168.1.11:554')
+        # video_capture = cv2.VideoCapture('/home/neelansh/data/video_5.mp4')
+        video_capture = cv2.VideoCapture(0)
+        # video_capture = cv2.VideoCapture('3F_07rttt.mp4')
         c = 0
-
+        # fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        # out = cv2.VideoWriter('output.avi',fourcc, 20.0, (1280,720))
         # #video writer
-        # fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-        # out = cv2.VideoWriter('3F_0726.avi', fourcc, fps=30, frameSize=(640,480))
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out =  cv2.VideoWriter('test_out.mp4', fourcc, fps=30, frameSize=(1280,720))
 
         print('Start Recognition!')
         prevTime = 0
         while True:
             ret, frame = video_capture.read()
 
-            frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
+            # frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
 
             curTime = time.time()    # calc fps
             timeF = frame_interval
 
             if (c % timeF == 0):
                 find_results = []
-
+                if frame is None:
+                    break
                 if frame.ndim == 2:
                     frame = facenet.to_rgb(frame)
                 frame = frame[:, :, 0:3]
@@ -104,10 +111,10 @@ with tf.Graph().as_default():
                             continue
 
                         cropped.append(frame[bb[i][1]:bb[i][3], bb[i][0]:bb[i][2], :])
-                        cropped[0] = facenet.flip(cropped[0], False)
+                        # cropped[0] = facenet.flip(cropped[0], False)
                         scaled.append(misc.imresize(cropped[0], (image_size, image_size), interp='bilinear'))
                         scaled[0] = cv2.resize(scaled[0], (input_image_size,input_image_size),
-                                               interpolation=cv2.INTER_CUBIC)
+                                            interpolation=cv2.INTER_CUBIC)
                         scaled[0] = facenet.prewhiten(scaled[0])
                         scaled_reshape.append(scaled[0].reshape(-1,input_image_size,input_image_size,3))
                         feed_dict = {images_placeholder: scaled_reshape[0], phase_train_placeholder: False}
@@ -121,16 +128,16 @@ with tf.Graph().as_default():
                         #plot result idx under box
                         text_x = bb[i][0]
                         text_y = bb[i][3] + 20
-                        # print('result: ', best_class_indices[0])
+                        # distance, index = model.kneighbors(emb_array)
                         for H_i in HumanNames:
-                            if(np.max(predictions) < 0.45):
+                            # if(np.average(distance[0]) > 0.95):
+                            if(False):
                                 cv2.putText(frame, 'someone else', (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                             1, (0, 0, 255), thickness=1, lineType=2)
                             else:
                                 if HumanNames[best_class_indices[0]] == H_i:
                                     result_names = HumanNames[best_class_indices[0]]
-                                    cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
-                                                1, (0, 0, 255), thickness=1, lineType=2)
+                                    cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,1, (0, 0, 255), thickness=1, lineType=2)
                 else:
                     print('Unable to align')
 
@@ -140,16 +147,15 @@ with tf.Graph().as_default():
             str = 'FPS: %2.3f' % fps
             text_fps_x = len(frame[0]) - 150
             text_fps_y = 20
-            cv2.putText(frame, str, (text_fps_x, text_fps_y),
-                        cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=2)
+            cv2.putText(frame, str, (text_fps_x, text_fps_y),cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=2)
             # c+=1
             cv2.imshow('Video', frame)
-            
+            out.write(frame)
             
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
         video_capture.release()
         # #video writer
-        # out.release()
+        out.release()
         cv2.destroyAllWindows()
