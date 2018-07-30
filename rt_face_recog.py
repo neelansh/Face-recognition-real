@@ -27,7 +27,7 @@ with tf.Graph().as_default():
     with sess.as_default():
         pnet, rnet, onet = detect_face.create_mtcnn(sess, './')
 
-        minsize = 25  # minimum size of face
+        minsize = 50  # minimum size of face
         threshold = [0.75, 0.75, 0.75]  # three steps's threshold
         factor = 0.709  # scale factor
         margin = 44
@@ -39,7 +39,7 @@ with tf.Graph().as_default():
         
 
         print('Loading feature extraction model')
-        modeldir = './models/20170512-110547-center-loss/20170512-110547.pb'
+        modeldir = './models/20180402-114759/20180402-114759.pb'
         facenet.load_model(modeldir)
 
         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
@@ -47,7 +47,7 @@ with tf.Graph().as_default():
         phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
         embedding_size = embeddings.get_shape()[1]
 
-        classifier_filename = './models/test_video.pkl'
+        classifier_filename = './models/test_video_3.pkl'
         classifier_filename_exp = os.path.expanduser(classifier_filename)
         HumanNames = []
         with open(classifier_filename_exp, 'rb') as infile:
@@ -56,8 +56,8 @@ with tf.Graph().as_default():
             HumanNames = class_names
 
         # video_capture = cv2.VideoCapture('rtsp://admin:Invoid1404@192.168.1.11:554')
-        # video_capture = cv2.VideoCapture('/home/neelansh/data/video_5.mp4')
-        video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture('/home/neelansh/Cam 1/00000000014000000.mp4')
+        # video_capture = cv2.VideoCapture(0)
         # video_capture = cv2.VideoCapture('3F_07rttt.mp4')
         c = 0
         # fourcc = cv2.VideoWriter_fourcc(*'MJPG')
